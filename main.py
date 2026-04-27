@@ -8,6 +8,7 @@ from agents.retriever import RetrievalAgent
 from memory.store import MemoryAgent
 from models.risk_model import RiskModel
 from tools.explainability import FeatureExplainer
+from tools.safety import SafetyGuard
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -25,6 +26,7 @@ def build_agent():
     memory = MemoryAgent(CHROMA_PATH)
     feature_explainer = FeatureExplainer(model)
     retriever = RetrievalAgent(KNOWLEDGE_PATH, CHROMA_PATH)
+    safety_guard = SafetyGuard()
 
     return Orchestrator(
         model,
@@ -33,6 +35,7 @@ def build_agent():
         memory,
         feature_explainer=feature_explainer,
         retrieval_agent=retriever,
+        safety_guard=safety_guard,
     )
 
 

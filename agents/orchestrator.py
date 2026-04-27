@@ -10,6 +10,7 @@ class Orchestrator:
         memory_agent,
         feature_explainer=None,
         retrieval_agent=None,
+        safety_guard=None,
     ):
         self.model = model
         self.explainer = explanation_agent
@@ -17,6 +18,7 @@ class Orchestrator:
         self.memory = memory_agent
         self.feature_explainer = feature_explainer
         self.retriever = retrieval_agent
+        self.safety_guard = safety_guard
 
     def run(self, patient_data):
         prob, patient = self.model.assess(patient_data)
@@ -39,11 +41,23 @@ class Orchestrator:
             feature_explanation=feature_explanation,
             similar_cases=similar_cases,
         )
+        safety = (
+            self.safety_guard.assess(patient, prob, risk)
+            if self.safety_guard is not None
+            else {
+                "alerts": [],
+                "escalation": "routine_followup",
+                "confidence_score": 1.0,
+                "confidence_label": "High",
+                "disclaimers": [],
+            }
+        )
         recommendation = self.recommender.recommend(
             patient,
             risk,
             retrieved_context=retrieved_context,
             similar_cases=similar_cases,
+            safety=safety,
         )
 
         self.memory.store(patient, prob, risk)
@@ -55,6 +69,7 @@ class Orchestrator:
             "feature_explanation": feature_explanation,
             "retrieved_context": retrieved_context,
             "similar_cases": similar_cases,
+            "safety": safety,
             "explanation": explanation,
             "recommendation": recommendation
         }

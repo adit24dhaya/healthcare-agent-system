@@ -7,3 +7,4 @@ openai
 langchain
 chromadb
 shap
+pytest

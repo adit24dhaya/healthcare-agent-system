@@ -151,6 +151,10 @@ Swagger docs: `http://127.0.0.1:8000/docs`
 
 - `GET /health` -> Health status
 - `POST /predict` -> Full multi-agent analysis pipeline
+- `POST /predict/summary` -> Condensed triage output
+- `GET /v1/health` -> Versioned health endpoint
+- `POST /v1/predict` -> Versioned full prediction with `request_id`
+- `POST /v1/predict/summary` -> Versioned condensed triage output
 
 Typical `/predict` response includes:
 
@@ -161,6 +165,29 @@ Typical `/predict` response includes:
 - Similar past cases
 - Explanation text
 - Recommendation text
+
+### API Authentication
+
+By default, API token auth is optional for local development. To enforce auth:
+
+```bash
+export REQUIRE_API_TOKEN=true
+export API_TOKEN="replace-with-strong-token"
+```
+
+Then call protected endpoints with:
+
+```bash
+Authorization: Bearer <API_TOKEN>
+```
+
+### Decision Audit Logs
+
+Every prediction request is written to:
+
+- `logs/decisions.jsonl`
+
+Each record includes timestamp, request ID, normalized patient summary, risk result, confidence, escalation, and alerts.
 
 ## Example Input
 
@@ -206,6 +233,25 @@ Always consult qualified healthcare professionals for real medical advice.
 - Better observability and decision tracing
 - Containerized deployment (Docker)
 - Feedback loops for continuous learning
+
+### Implemented in Phase 3
+
+- Added a safety guardrail layer with escalation categories:
+  - `routine_followup`
+  - `prompt_clinician_followup`
+  - `urgent_clinician_review`
+- Added confidence scoring and safety alerts in orchestrator outputs
+- Exposed concise triage endpoint: `POST /predict/summary`
+- Added baseline automated tests (`tests/`) for model behavior and API health
+- Added evaluation utility: `scripts/evaluate_model.py` for accuracy/F1/ROC-AUC
+
+### Implemented in Phase 4
+
+- Added versioned API routes (`/v1/*`) for forward-compatible contracts
+- Added optional bearer-token protection for API endpoints
+- Added structured decision audit logging (`logs/decisions.jsonl`)
+- Added Dockerfile + Docker Compose for reproducible local deployment
+- Added CI workflow (compile + test on push/PR)
 
 ## Contributing
 

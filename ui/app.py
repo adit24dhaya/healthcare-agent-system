@@ -50,13 +50,21 @@ result = st.session_state.get("last_result")
 
 if result:
     patient = result["patient"]
-    confidence = "Lower" if not patient["glucose_measured"] else "Normal"
+    safety = result.get("safety", {})
+    confidence = safety.get("confidence_label", "Unknown")
 
-    metric_cols = st.columns(4)
+    metric_cols = st.columns(5)
     metric_cols[0].metric("Risk", result["risk"])
     metric_cols[1].metric("Probability", f"{result['probability']:.1%}")
     metric_cols[2].metric("Calculated BMI", f"{patient['bmi']:.1f}")
     metric_cols[3].metric("Confidence", confidence)
+    metric_cols[4].metric("Escalation", safety.get("escalation", "routine_followup"))
+
+    if safety.get("alerts"):
+        for alert in safety["alerts"]:
+            st.warning(alert)
+    for disclaimer in safety.get("disclaimers", []):
+        st.caption(disclaimer)
 
     dashboard_tab, memory_tab, knowledge_tab = st.tabs(["Dashboard", "Memory", "Knowledge"])
 
