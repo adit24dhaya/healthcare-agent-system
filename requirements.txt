@@ -1,0 +1,9 @@
+pandas
+scikit-learn
+streamlit
+fastapi
+uvicorn
+openai
+langchain
+chromadb
+shap
