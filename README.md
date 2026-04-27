@@ -270,7 +270,9 @@ Always consult qualified healthcare professionals for real medical advice.
 - Added Dockerfile + Docker Compose for reproducible local deployment
 - Added CI workflow (compile + test on push/PR)
 - Added lint + coverage quality gates in CI
+- Expanded CI to run on Python 3.10 and 3.11 with dependency caching
 - Added local pre-commit hooks for code quality
+- Added Dependabot automation for pip and GitHub Actions updates
 
 ## Security Notes
 
