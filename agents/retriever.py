@@ -31,11 +31,13 @@ class RetrievalAgent:
 
         contexts = []
         for document, metadata, distance in zip(documents, metadatas, distances):
-            contexts.append({
-                "title": metadata.get("title", "Medical note"),
-                "text": document,
-                "distance": float(distance),
-            })
+            contexts.append(
+                {
+                    "title": metadata.get("title", "Medical note"),
+                    "text": document,
+                    "distance": float(distance),
+                }
+            )
         return self._rerank(contexts, patient_data, risk)[:n_results]
 
     def _seed_knowledge(self):
@@ -88,7 +90,10 @@ class RetrievalAgent:
             if title == "High risk clinical review":
                 value += 2.0 if risk == "High" else -3.0
             if title == "Glucose testing":
-                if not patient_data.get("glucose_measured", True) or patient_data.get("glucose", 0) >= 140:
+                if (
+                    not patient_data.get("glucose_measured", True)
+                    or patient_data.get("glucose", 0) >= 140
+                ):
                     value += 1.5
             if title == "Blood pressure follow-up" and patient_data.get("bp", 0) >= 130:
                 value += 1.25

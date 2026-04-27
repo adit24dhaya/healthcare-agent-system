@@ -17,14 +17,13 @@ class RiskModel:
         height_m = height_cm / 100
         if height_m <= 0:
             raise ValueError("Height must be greater than 0.")
-        return weight_kg / (height_m ** 2)
+        return weight_kg / (height_m**2)
 
     def train(self, df):
         df = df.copy()
         if "bmi" not in df.columns:
             df["bmi"] = df.apply(
-                lambda row: self.calculate_bmi(row["height_cm"], row["weight_kg"]),
-                axis=1
+                lambda row: self.calculate_bmi(row["height_cm"], row["weight_kg"]), axis=1
             )
 
         self.default_glucose = float(df["glucose"].median())
@@ -86,9 +85,14 @@ class RiskModel:
         }
 
     def feature_frame(self, patient):
-        return pd.DataFrame([{
-            "age": patient["age"],
-            "bmi": patient["bmi"],
-            "bp": patient["bp"],
-            "glucose": patient["glucose"],
-        }], columns=self.FEATURE_NAMES)
+        return pd.DataFrame(
+            [
+                {
+                    "age": patient["age"],
+                    "bmi": patient["bmi"],
+                    "bp": patient["bp"],
+                    "glucose": patient["glucose"],
+                }
+            ],
+            columns=self.FEATURE_NAMES,
+        )

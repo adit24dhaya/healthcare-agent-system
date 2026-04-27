@@ -8,9 +8,13 @@ class RecommendationAgent:
         self.model_name = model_name
         self.client = OpenAI() if os.getenv("OPENAI_API_KEY") else None
 
-    def recommend(self, patient_data, risk, retrieved_context=None, similar_cases=None, safety=None):
+    def recommend(
+        self, patient_data, risk, retrieved_context=None, similar_cases=None, safety=None
+    ):
         if self.client is None:
-            return self._fallback_recommendation(patient_data, risk, retrieved_context, similar_cases, safety)
+            return self._fallback_recommendation(
+                patient_data, risk, retrieved_context, similar_cases, safety
+            )
 
         prompt = f"""
         Patient data: {patient_data}
@@ -24,14 +28,15 @@ class RecommendationAgent:
 
         try:
             response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}]
+                model=self.model_name, messages=[{"role": "user", "content": prompt}]
             )
             return response.choices[0].message.content
         except Exception as exc:
             return f"{self._fallback_recommendation(patient_data, risk, retrieved_context, similar_cases, safety)} LLM recommendation unavailable: {exc}"
 
-    def _fallback_recommendation(self, patient_data, risk, retrieved_context=None, similar_cases=None, safety=None):
+    def _fallback_recommendation(
+        self, patient_data, risk, retrieved_context=None, similar_cases=None, safety=None
+    ):
         glucose_note = ""
         if not patient_data.get("glucose_measured", True):
             glucose_note = " Because glucose was not measured, get an A1C or fasting blood glucose test before making clinical decisions."

@@ -26,5 +26,11 @@ jobs:
       - name: Compile
         run: python -m compileall agents api models tools memory ui main.py scripts tests
 
-      - name: Run tests
-        run: pytest -q
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .
+
+      - name: Run tests with coverage
+        run: pytest -q --cov=. --cov-report=term-missing --cov-fail-under=60

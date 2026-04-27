@@ -10,7 +10,6 @@ from models.risk_model import RiskModel
 from tools.explainability import FeatureExplainer
 from tools.safety import SafetyGuard
 
-
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "data" / "patients.csv"
 KNOWLEDGE_PATH = BASE_DIR / "data" / "medical_knowledge.jsonl"

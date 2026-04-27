@@ -32,13 +32,15 @@ class FeatureExplainer:
 
         impacts = []
         for feature, value, impact in zip(self.risk_model.FEATURE_NAMES, row.iloc[0], values):
-            impacts.append({
-                "feature": feature,
-                "value": float(value),
-                "impact": float(impact),
-                "direction": "raises risk" if impact > 0 else "lowers risk",
-                "magnitude": abs(float(impact)),
-            })
+            impacts.append(
+                {
+                    "feature": feature,
+                    "value": float(value),
+                    "impact": float(impact),
+                    "direction": "raises risk" if impact > 0 else "lowers risk",
+                    "magnitude": abs(float(impact)),
+                }
+            )
 
         impacts.sort(key=lambda item: item["magnitude"], reverse=True)
         return {

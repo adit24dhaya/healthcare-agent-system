@@ -8,3 +8,6 @@ langchain
 chromadb
 shap
 pytest
+pytest-cov
+ruff
+pre-commit

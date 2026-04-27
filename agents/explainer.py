@@ -10,7 +10,9 @@ class ExplanationAgent:
 
     def explain(self, patient_data, prob, feature_explanation=None, similar_cases=None):
         if self.client is None:
-            return self._fallback_explanation(patient_data, prob, feature_explanation, similar_cases)
+            return self._fallback_explanation(
+                patient_data, prob, feature_explanation, similar_cases
+            )
 
         prompt = f"""
         Patient data: {patient_data}
@@ -23,14 +25,15 @@ class ExplanationAgent:
 
         try:
             response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}]
+                model=self.model_name, messages=[{"role": "user", "content": prompt}]
             )
             return response.choices[0].message.content
         except Exception as exc:
             return f"{self._fallback_explanation(patient_data, prob, feature_explanation, similar_cases)} LLM explanation unavailable: {exc}"
 
-    def _fallback_explanation(self, patient_data, prob, feature_explanation=None, similar_cases=None):
+    def _fallback_explanation(
+        self, patient_data, prob, feature_explanation=None, similar_cases=None
+    ):
         age = patient_data["age"]
         bmi = patient_data["bmi"]
         bp = patient_data["bp"]
@@ -55,7 +58,9 @@ class ExplanationAgent:
         top_impacts = self._top_feature_text(feature_explanation)
         memory_text = ""
         if similar_cases:
-            memory_text = f" I found {len(similar_cases)} similar prior case(s) in memory for comparison."
+            memory_text = (
+                f" I found {len(similar_cases)} similar prior case(s) in memory for comparison."
+            )
 
         return (
             f"The model estimated a {prob:.1%} risk using a calculated BMI of {bmi:.1f}. "
@@ -67,9 +72,6 @@ class ExplanationAgent:
             return ""
 
         top_features = feature_explanation["features"][:3]
-        parts = [
-            f"{item['feature']} {item['direction']}"
-            for item in top_features
-        ]
+        parts = [f"{item['feature']} {item['direction']}" for item in top_features]
         method = feature_explanation.get("method", "model")
         return f"The {method.upper()} explanation highlights: {', '.join(parts)}. "

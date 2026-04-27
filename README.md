@@ -29,6 +29,8 @@ User Input
    -> Final Output (dashboard + API/chat-ready response)
 ```
 
+Detailed diagram: [`docs/architecture.md`](docs/architecture.md)
+
 ## Key Features
 
 - **Risk prediction** from patient vitals and demographic inputs
@@ -110,6 +112,13 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 2.1) Enable local pre-commit checks (recommended)
+
+```bash
+pre-commit install
+pre-commit run --all-files
 ```
 
 ### 3) Configure environment variables
@@ -252,6 +261,12 @@ Always consult qualified healthcare professionals for real medical advice.
 - Added structured decision audit logging (`logs/decisions.jsonl`)
 - Added Dockerfile + Docker Compose for reproducible local deployment
 - Added CI workflow (compile + test on push/PR)
+- Added lint + coverage quality gates in CI
+- Added local pre-commit hooks for code quality
+
+## Security Notes
+
+See [`docs/security.md`](docs/security.md) for PII handling guidance, retention policy, and hardening recommendations.
 
 ## Contributing
 

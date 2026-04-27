@@ -6,7 +6,6 @@ from uuid import uuid4
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -14,7 +13,6 @@ if str(PROJECT_ROOT) not in sys.path:
 from core.config import get_settings
 from main import agent
 from tools.audit_logger import AuditLogger
-
 
 app = FastAPI(title="Healthcare Agent API")
 settings = get_settings()

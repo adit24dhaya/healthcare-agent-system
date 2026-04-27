@@ -4,17 +4,23 @@ class SafetyGuard:
         escalation = "routine_followup"
 
         if patient["bp"] >= 180:
-            alerts.append("Severely elevated blood pressure; urgent same-day clinical assessment is recommended.")
+            alerts.append(
+                "Severely elevated blood pressure; urgent same-day clinical assessment is recommended."
+            )
             escalation = "urgent_clinician_review"
         elif patient["bp"] >= 160:
-            alerts.append("Very high blood pressure detected; prompt clinician follow-up is recommended.")
+            alerts.append(
+                "Very high blood pressure detected; prompt clinician follow-up is recommended."
+            )
             escalation = "prompt_clinician_followup"
 
         if patient["glucose"] >= 300:
             alerts.append("Very high glucose value; urgent medical evaluation is recommended.")
             escalation = "urgent_clinician_review"
         elif patient["glucose"] >= 200:
-            alerts.append("High glucose value detected; prompt confirmatory testing and clinician review are recommended.")
+            alerts.append(
+                "High glucose value detected; prompt confirmatory testing and clinician review are recommended."
+            )
             if escalation == "routine_followup":
                 escalation = "prompt_clinician_followup"
 
@@ -23,7 +29,9 @@ class SafetyGuard:
 
         if risk == "High" and probability >= 0.85 and escalation == "routine_followup":
             escalation = "prompt_clinician_followup"
-            alerts.append("Model indicates very high predicted risk; expedited clinician review is advised.")
+            alerts.append(
+                "Model indicates very high predicted risk; expedited clinician review is advised."
+            )
 
         confidence_score, confidence_label = self._confidence(patient)
         disclaimers = [

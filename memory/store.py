@@ -34,11 +34,13 @@ class MemoryAgent:
             results.get("documents", []),
             results.get("metadatas", []),
         ):
-            records.append({
-                "id": record_id,
-                "summary": document,
-                "metadata": metadata,
-            })
+            records.append(
+                {
+                    "id": record_id,
+                    "summary": document,
+                    "metadata": metadata,
+                }
+            )
 
         records.sort(key=lambda item: item["metadata"].get("timestamp", ""), reverse=True)
         return records[:limit]
@@ -61,11 +63,13 @@ class MemoryAgent:
 
         matches = []
         for document, metadata, distance in zip(documents, metadatas, distances):
-            matches.append({
-                "summary": document,
-                "metadata": metadata,
-                "distance": float(distance),
-            })
+            matches.append(
+                {
+                    "summary": document,
+                    "metadata": metadata,
+                    "distance": float(distance),
+                }
+            )
         return matches
 
     def _patient_summary(self, patient_data, prob, risk):

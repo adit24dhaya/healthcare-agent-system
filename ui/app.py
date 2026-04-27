@@ -4,14 +4,12 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from main import agent
 from models.risk_model import RiskModel
-
 
 st.set_page_config(page_title="Healthcare AI Agent", page_icon=":hospital:", layout="wide")
 
@@ -21,7 +19,9 @@ st.caption("Educational prototype only. Not medical advice.")
 with st.sidebar:
     st.header("Patient")
     age = st.number_input("Age", min_value=0, max_value=120, value=45)
-    height_cm = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, value=170.0, step=0.5)
+    height_cm = st.number_input(
+        "Height (cm)", min_value=50.0, max_value=250.0, value=170.0, step=0.5
+    )
     weight_kg = st.number_input("Weight (kg)", min_value=2.0, max_value=300.0, value=82.4, step=0.1)
     bp = st.number_input("Blood Pressure", min_value=0, max_value=260, value=130)
     has_glucose = st.checkbox("I have a glucose value", value=True)
@@ -30,7 +30,9 @@ with st.sidebar:
     if has_glucose:
         glucose = st.number_input("Glucose (mg/dL)", min_value=0, max_value=500, value=180)
     else:
-        st.info("Without a glucose reading, the model uses a training-data median. Treat the result as lower confidence.")
+        st.info(
+            "Without a glucose reading, the model uses a training-data median. Treat the result as lower confidence."
+        )
 
     analyze = st.button("Analyze", type="primary", use_container_width=True)
 
@@ -97,18 +99,20 @@ if result:
         st.subheader("Similar Cases")
         if result["similar_cases"]:
             st.dataframe(
-                pd.DataFrame([
-                    {
-                        "risk": item["metadata"].get("risk"),
-                        "probability": item["metadata"].get("probability"),
-                        "age": item["metadata"].get("age"),
-                        "bmi": item["metadata"].get("bmi"),
-                        "bp": item["metadata"].get("bp"),
-                        "glucose": item["metadata"].get("glucose"),
-                        "distance": item["distance"],
-                    }
-                    for item in result["similar_cases"]
-                ]),
+                pd.DataFrame(
+                    [
+                        {
+                            "risk": item["metadata"].get("risk"),
+                            "probability": item["metadata"].get("probability"),
+                            "age": item["metadata"].get("age"),
+                            "bmi": item["metadata"].get("bmi"),
+                            "bp": item["metadata"].get("bp"),
+                            "glucose": item["metadata"].get("glucose"),
+                            "distance": item["distance"],
+                        }
+                        for item in result["similar_cases"]
+                    ]
+                ),
                 use_container_width=True,
                 hide_index=True,
             )
@@ -118,8 +122,8 @@ if result:
         st.subheader("Recent Memory")
         history = agent.memory.get_all()
         if history:
-            st.dataframe(
-                pd.DataFrame([
+            history_df = pd.DataFrame(
+                [
                     {
                         "timestamp": item["metadata"].get("timestamp"),
                         "risk": item["metadata"].get("risk"),
@@ -130,10 +134,28 @@ if result:
                         "glucose": item["metadata"].get("glucose"),
                     }
                     for item in history
-                ]),
-                use_container_width=True,
-                hide_index=True,
+                ]
             )
+            history_df["timestamp"] = pd.to_datetime(history_df["timestamp"], errors="coerce")
+            history_df = history_df.sort_values("timestamp")
+
+            st.subheader("Risk Trend Over Time")
+            trend_df = history_df.dropna(subset=["timestamp", "probability"]).set_index("timestamp")
+            if not trend_df.empty:
+                st.line_chart(trend_df[["probability"]], use_container_width=True)
+            else:
+                st.write("Not enough timestamped records to draw trend.")
+
+            st.subheader("Risk Level History")
+            risk_counts = (
+                history_df["risk"].value_counts().rename_axis("risk").reset_index(name="count")
+            )
+            st.bar_chart(risk_counts.set_index("risk"), use_container_width=True)
+
+            st.subheader("Memory Table")
+            display_df = history_df.copy()
+            display_df["timestamp"] = display_df["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+            st.dataframe(display_df, use_container_width=True, hide_index=True)
         else:
             st.write("No memory records yet.")
 

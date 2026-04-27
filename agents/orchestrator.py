@@ -71,5 +71,5 @@ class Orchestrator:
             "similar_cases": similar_cases,
             "safety": safety,
             "explanation": explanation,
-            "recommendation": recommendation
+            "recommendation": recommendation,
         }
