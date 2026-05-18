@@ -72,4 +72,5 @@ class Orchestrator:
             "safety": safety,
             "explanation": explanation,
             "recommendation": recommendation,
+            "model": self.model.artifact_metadata,
         }

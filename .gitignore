@@ -5,3 +5,5 @@ __pycache__/
 logs/
 .coverage
 data/chroma/
+artifacts/*.joblib
+artifacts/*.log

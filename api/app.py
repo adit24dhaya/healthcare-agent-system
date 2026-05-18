@@ -26,6 +26,24 @@ class PatientRequest(BaseModel):
     bmi: Optional[float] = Field(None, ge=0, le=80)
     bp: int = Field(..., ge=0, le=260)
     glucose: Optional[float] = Field(None, ge=0, le=500)
+    high_chol: Optional[bool] = None
+    chol_check: Optional[bool] = None
+    smoker: Optional[bool] = None
+    stroke: Optional[bool] = None
+    heart_disease_or_attack: Optional[bool] = None
+    phys_activity: Optional[bool] = None
+    fruits: Optional[bool] = None
+    veggies: Optional[bool] = None
+    heavy_alcohol_consump: Optional[bool] = None
+    any_healthcare: Optional[bool] = None
+    no_doc_bc_cost: Optional[bool] = None
+    general_health: Optional[int] = Field(None, ge=1, le=5)
+    mental_health_days: Optional[int] = Field(None, ge=0, le=30)
+    physical_health_days: Optional[int] = Field(None, ge=0, le=30)
+    diff_walk: Optional[bool] = None
+    sex: Optional[str] = Field(None, pattern="^(female|male|0|1|F|M|f|m)$")
+    education: Optional[int] = Field(None, ge=1, le=6)
+    income: Optional[int] = Field(None, ge=1, le=8)
 
 
 class ChatRequest(BaseModel):

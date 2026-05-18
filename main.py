@@ -5,6 +5,7 @@ from agents.explainer import ExplanationAgent
 from agents.orchestrator import Orchestrator
 from agents.recommender import RecommendationAgent
 from agents.retriever import RetrievalAgent
+from core.config import get_settings
 from memory.store import MemoryAgent
 from models.risk_model import RiskModel
 from tools.explainability import FeatureExplainer
@@ -17,8 +18,12 @@ CHROMA_PATH = BASE_DIR / "data" / "chroma"
 
 
 def build_agent():
+    settings = get_settings()
     model = RiskModel()
-    model.train_from_csv(DATA_PATH)
+    if settings.model_artifact_path.exists():
+        model.load_artifact(settings.model_artifact_path)
+    else:
+        model.train_from_csv(DATA_PATH)
 
     explainer = ExplanationAgent()
     recommender = RecommendationAgent()

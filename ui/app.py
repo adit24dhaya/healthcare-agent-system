@@ -14,25 +14,53 @@ from models.risk_model import RiskModel
 st.set_page_config(page_title="Healthcare AI Agent", page_icon=":hospital:", layout="wide")
 
 st.title("Healthcare AI Agent")
-st.caption("Educational prototype only. Not medical advice.")
+st.caption(
+    "Educational prototype only. Not medical advice. "
+    "Fill Health Profile and Lifestyle for best accuracy."
+)
 
 with st.sidebar:
     st.header("Patient")
-    age = st.number_input("Age", min_value=0, max_value=120, value=45)
-    height_cm = st.number_input(
-        "Height (cm)", min_value=50.0, max_value=250.0, value=170.0, step=0.5
-    )
-    weight_kg = st.number_input("Weight (kg)", min_value=2.0, max_value=300.0, value=82.4, step=0.1)
-    bp = st.number_input("Blood Pressure", min_value=0, max_value=260, value=130)
-    has_glucose = st.checkbox("I have a glucose value", value=True)
-    glucose = None
-
-    if has_glucose:
-        glucose = st.number_input("Glucose (mg/dL)", min_value=0, max_value=500, value=180)
-    else:
-        st.info(
-            "Without a glucose reading, the model uses a training-data median. Treat the result as lower confidence."
+    with st.expander("Vitals", expanded=True):
+        age = st.number_input("Age", min_value=0, max_value=120, value=45)
+        sex = st.selectbox("Sex", ["female", "male"], index=0)
+        height_cm = st.number_input(
+            "Height (cm)", min_value=50.0, max_value=250.0, value=170.0, step=0.5
         )
+        weight_kg = st.number_input(
+            "Weight (kg)", min_value=2.0, max_value=300.0, value=82.4, step=0.1
+        )
+        bp = st.number_input("Blood Pressure", min_value=0, max_value=260, value=130)
+        has_glucose = st.checkbox("I have a glucose value", value=True)
+        glucose = None
+
+        if has_glucose:
+            glucose = st.number_input("Glucose (mg/dL)", min_value=0, max_value=500, value=180)
+        else:
+            st.info(
+                "Without a glucose reading, the model uses a training-data median. Treat the result as lower confidence."
+            )
+
+    with st.expander("Health Profile", expanded=True):
+        high_chol = st.checkbox("High cholesterol", value=False)
+        chol_check = st.checkbox("Cholesterol checked in past 5 years", value=True)
+        smoker = st.checkbox("Smoker", value=False)
+        stroke = st.checkbox("Stroke history", value=False)
+        heart_disease_or_attack = st.checkbox("Heart disease or heart attack", value=False)
+        diff_walk = st.checkbox("Difficulty walking", value=False)
+        general_health = st.slider("General health", min_value=1, max_value=5, value=3)
+        mental_health_days = st.slider("Mental health days", min_value=0, max_value=30, value=2)
+        physical_health_days = st.slider("Physical health days", min_value=0, max_value=30, value=2)
+
+    with st.expander("Lifestyle and Access", expanded=False):
+        phys_activity = st.checkbox("Physical activity", value=True)
+        fruits = st.checkbox("Fruit most days", value=True)
+        veggies = st.checkbox("Vegetables most days", value=True)
+        heavy_alcohol_consump = st.checkbox("Heavy alcohol consumption", value=False)
+        any_healthcare = st.checkbox("Has healthcare coverage", value=True)
+        no_doc_bc_cost = st.checkbox("Skipped doctor due to cost", value=False)
+        education = st.slider("Education level", min_value=1, max_value=6, value=5)
+        income = st.slider("Income level", min_value=1, max_value=8, value=5)
 
     analyze = st.button("Analyze", type="primary", use_container_width=True)
 
@@ -45,6 +73,24 @@ if analyze:
         "bmi": round(calculated_bmi, 1),
         "bp": bp,
         "glucose": glucose,
+        "high_chol": high_chol,
+        "chol_check": chol_check,
+        "smoker": smoker,
+        "stroke": stroke,
+        "heart_disease_or_attack": heart_disease_or_attack,
+        "phys_activity": phys_activity,
+        "fruits": fruits,
+        "veggies": veggies,
+        "heavy_alcohol_consump": heavy_alcohol_consump,
+        "any_healthcare": any_healthcare,
+        "no_doc_bc_cost": no_doc_bc_cost,
+        "general_health": general_health,
+        "mental_health_days": mental_health_days,
+        "physical_health_days": physical_health_days,
+        "diff_walk": diff_walk,
+        "sex": sex,
+        "education": education,
+        "income": income,
     }
     st.session_state["last_result"] = agent.run(patient)
 

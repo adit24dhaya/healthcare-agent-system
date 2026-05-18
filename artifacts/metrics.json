@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "trained_at": "2026-05-18T04:25:44.982333+00:00",
+  "dataset_slug": "alexteboul/diabetes-health-indicators-dataset",
+  "dataset_path": "/kaggle/input/datasets/alexteboul/diabetes-health-indicators-dataset/diabetes_binary_health_indicators_BRFSS2015.csv",
+  "target": "Diabetes_binary",
+  "rows_total": 253680,
+  "rows_train": 202944,
+  "rows_test": 50736,
+  "feature_names": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "selected_model": "hist_gradient_boosting",
+  "selection_method": "5-fold_cv_then_holdout_test",
+  "calibration": "isotonic_cv3",
+  "tuned_models": [
+    "hist_gradient_boosting",
+    "lightgbm"
+  ],
+  "lightgbm_available": true,
+  "metrics": {
+    "logistic_regression": {
+      "cv_roc_auc_mean": 0.8233,
+      "cv_roc_auc_std": 0.00144,
+      "roc_auc": 0.8196,
+      "average_precision": 0.39165,
+      "brier_score": 0.09928,
+      "accuracy_at_0_5": 0.86239,
+      "precision_at_0_5": 0.53234,
+      "recall_at_0_5": 0.10129,
+      "f1_at_0_5": 0.17019,
+      "selected_threshold": 0.22077,
+      "accuracy": 0.78506,
+      "precision": 0.35327,
+      "recall": 0.65327,
+      "f1": 0.45857,
+      "confusion_matrix": {
+        "true_negative": 35213,
+        "false_positive": 8454,
+        "false_negative": 2451,
+        "true_positive": 4618
+      }
+    },
+    "hist_gradient_boosting": {
+      "cv_roc_auc_mean": 0.83059,
+      "cv_roc_auc_std": 0.00232,
+      "best_params": {
+        "min_samples_leaf": 40,
+        "max_iter": 350,
+        "max_depth": null,
+        "learning_rate": 0.05,
+        "l2_regularization": 0.1
+      },
+      "cv_roc_auc_tune": 0.83034,
+      "roc_auc": 0.82698,
+      "average_precision": 0.42299,
+      "brier_score": 0.09739,
+      "accuracy_at_0_5": 0.86536,
+      "precision_at_0_5": 0.56503,
+      "recall_at_0_5": 0.14627,
+      "f1_at_0_5": 0.23239,
+      "selected_threshold": 0.22379,
+      "accuracy": 0.80075,
+      "precision": 0.37302,
+      "recall": 0.63163,
+      "f1": 0.46904,
+      "confusion_matrix": {
+        "true_negative": 36162,
+        "false_positive": 7505,
+        "false_negative": 2604,
+        "true_positive": 4465
+      }
+    },
+    "random_forest": {
+      "cv_roc_auc_mean": 0.82118,
+      "cv_roc_auc_std": 0.00215,
+      "roc_auc": 0.82434,
+      "average_precision": 0.41728,
+      "brier_score": 0.09791,
+      "accuracy_at_0_5": 0.86509,
+      "precision_at_0_5": 0.56154,
+      "recall_at_0_5": 0.14457,
+      "f1_at_0_5": 0.22995,
+      "selected_threshold": 0.23549,
+      "accuracy": 0.80527,
+      "precision": 0.3767,
+      "recall": 0.60744,
+      "f1": 0.46502,
+      "confusion_matrix": {
+        "true_negative": 36562,
+        "false_positive": 7105,
+        "false_negative": 2775,
+        "true_positive": 4294
+      }
+    },
+    "lightgbm": {
+      "cv_roc_auc_mean": 0.82868,
+      "cv_roc_auc_std": 0.00235,
+      "best_params": {
+        "subsample": 0.8,
+        "num_leaves": 31,
+        "n_estimators": 200,
+        "min_child_samples": 40,
+        "learning_rate": 0.03,
+        "colsample_bytree": 1.0
+      },
+      "cv_roc_auc_tune": 0.83017,
+      "roc_auc": 0.8269,
+      "average_precision": 0.42152,
+      "brier_score": 0.09745,
+      "accuracy_at_0_5": 0.86528,
+      "precision_at_0_5": 0.5627,
+      "recall_at_0_5": 0.14854,
+      "f1_at_0_5": 0.23503,
+      "selected_threshold": 0.23289,
+      "accuracy": 0.80487,
+      "precision": 0.37788,
+      "recall": 0.61961,
+      "f1": 0.46945,
+      "confusion_matrix": {
+        "true_negative": 36456,
+        "false_positive": 7211,
+        "false_negative": 2689,
+        "true_positive": 4380
+      }
+    }
+  },
+  "sklearn_version": "1.6.1"
+}
