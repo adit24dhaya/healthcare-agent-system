@@ -1,0 +1,12 @@
+---
+description: Do not add Cursor branding to commits, PRs, or project files
+alwaysApply: true
+---
+
+# No Cursor attribution
+
+Never add "Made-with: Cursor", "Made with Cursor", "Co-authored-by: Cursor", or any Cursor attribution trailer to:
+
+- Git commit messages
+- Pull request titles or descriptions
+- README, docs, or code comments
