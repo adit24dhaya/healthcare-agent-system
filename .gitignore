@@ -7,3 +7,5 @@ logs/
 data/chroma/
 artifacts/*.joblib
 artifacts/*.log
+web/.next/
+web/node_modules/

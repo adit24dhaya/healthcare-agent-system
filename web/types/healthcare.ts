@@ -1,0 +1,121 @@
+export type RiskLevel = "Low" | "Medium" | "High";
+
+export type PatientInput = {
+  age: number;
+  height_cm: number;
+  weight_kg: number;
+  bp: number;
+  glucose: number | null;
+  high_chol: boolean;
+  chol_check: boolean;
+  smoker: boolean;
+  stroke: boolean;
+  heart_disease_or_attack: boolean;
+  phys_activity: boolean;
+  fruits: boolean;
+  veggies: boolean;
+  heavy_alcohol_consump: boolean;
+  any_healthcare: boolean;
+  no_doc_bc_cost: boolean;
+  general_health: number;
+  mental_health_days: number;
+  physical_health_days: number;
+  diff_walk: boolean;
+  sex: "female" | "male";
+  education: number;
+  income: number;
+};
+
+export type PreparedPatient = {
+  age: number;
+  height_cm: number | null;
+  weight_kg: number | null;
+  bmi: number;
+  bp: number;
+  glucose: number;
+  glucose_measured: boolean;
+  high_bp?: number;
+  age_bucket?: number;
+  sex?: number;
+};
+
+export type FeatureImpact = {
+  feature: string;
+  value: number;
+  impact: number;
+  direction: string;
+  magnitude: number;
+};
+
+export type FeatureExplanation = {
+  method: string;
+  features: FeatureImpact[];
+};
+
+export type SafetyResult = {
+  alerts: string[];
+  escalation: "routine_followup" | "prompt_clinician_followup" | "urgent_clinician_review";
+  confidence_score: number;
+  confidence_label: "Low" | "Medium" | "High";
+  disclaimers: string[];
+};
+
+export type RetrievedContext = {
+  title: string;
+  text: string;
+};
+
+export type SimilarCase = {
+  metadata: {
+    timestamp?: string;
+    risk?: RiskLevel;
+    probability?: number;
+    age?: number;
+    bmi?: number;
+    bp?: number;
+    glucose?: number;
+  };
+  distance: number;
+};
+
+export type MemoryRecord = {
+  id: string;
+  summary: string;
+  metadata: SimilarCase["metadata"];
+};
+
+export type HistoryResponse = {
+  records: MemoryRecord[];
+};
+
+export type ModelMetrics = {
+  roc_auc?: number;
+  average_precision?: number;
+  brier_score?: number;
+  f1?: number;
+  selected_threshold?: number;
+  [key: string]: unknown;
+};
+
+export type ModelMetadata = {
+  selected_model?: string;
+  rows_total?: number;
+  calibration?: string;
+  dataset_slug?: string;
+  selection_method?: string;
+  metrics?: Record<string, ModelMetrics>;
+};
+
+export type PredictionResult = {
+  request_id?: string;
+  probability: number;
+  risk: RiskLevel;
+  patient: PreparedPatient;
+  feature_explanation: FeatureExplanation;
+  retrieved_context: RetrievedContext[];
+  similar_cases: SimilarCase[];
+  safety: SafetyResult;
+  explanation: string;
+  recommendation: string;
+  model?: ModelMetadata;
+};

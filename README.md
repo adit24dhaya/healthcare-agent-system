@@ -13,7 +13,7 @@ This project combines:
 - Retrieval-augmented context from a local medical knowledge base
 - Persistent patient memory with similarity search (ChromaDB)
 - SHAP-based feature attribution for explainability
-- A Streamlit dashboard and FastAPI backend
+- A production Next.js risk console, Streamlit dashboard, and FastAPI backend
 
 The result is an agentic healthcare prototype that demonstrates end-to-end decision flow, transparency, and memory.
 
@@ -44,8 +44,9 @@ Detailed diagram: [`docs/architecture.md`](docs/architecture.md)
 - **LLM-generated actionable recommendations**
 - **RAG context retrieval** from local medical guidance documents
 - **Persistent memory** with similar historical case retrieval
-- **Dual interface**:
-  - Streamlit dashboard for interactive use
+- **Multi-interface delivery**:
+  - Next.js risk console for the production portfolio UI
+  - Streamlit dashboard for fast local experimentation
   - FastAPI endpoints for integration and automation
 
 ## Tech Stack
@@ -56,7 +57,7 @@ Detailed diagram: [`docs/architecture.md`](docs/architecture.md)
 - **LLM**: OpenAI API
 - **Memory/Vector Store**: ChromaDB
 - **Backend API**: FastAPI, Uvicorn
-- **Frontend**: Streamlit
+- **Frontend**: Next.js, TypeScript, Tailwind CSS, TanStack Query, Recharts, Streamlit
 - **Deployment**: Docker, AWS App Runner, ECR, Terraform
 
 ## Project Structure
@@ -95,6 +96,10 @@ healthcare-agent-system/
 │   └── local_embeddings.py
 ├── ui/
 │   └── app.py
+├── web/
+│   ├── app/
+│   ├── components/
+│   └── package.json
 ├── main.py
 ├── requirements.txt
 └── README.md
@@ -168,17 +173,17 @@ See [`docs/kaggle_training.md`](docs/kaggle_training.md) and [`kaggle/README.md`
 
 ## Deploy To AWS
 
-The API deploys as a Dockerized FastAPI service on AWS App Runner with ECR and Terraform.
+The API and Next.js console deploy as Dockerized App Runner services with ECR and Terraform.
 
 ```bash
 cd infra/aws/apprunner
 terraform init
-terraform apply -target=aws_ecr_repository.api
+terraform apply -target=aws_ecr_repository.api -target=aws_ecr_repository.web
 terraform apply -var "api_token=replace-with-a-strong-token"
 ```
 
-After the first targeted apply creates ECR, build and push the Docker image from the
-repo root, then run the full apply. See [`docs/aws_deployment.md`](docs/aws_deployment.md) and
+After the first targeted apply creates ECR, build and push both Docker images, then run
+the full apply. See [`docs/aws_deployment.md`](docs/aws_deployment.md) and
 [`infra/aws/apprunner/README.md`](infra/aws/apprunner/README.md).
 
 ## Run the Project
@@ -196,6 +201,18 @@ streamlit run ui/app.py
 ```
 
 Default local URL: `http://localhost:8501`
+
+### Run Next.js risk console
+
+Start FastAPI first, then in another terminal:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Default local URL: `http://localhost:3000`
 
 ### Run FastAPI backend
 
@@ -330,6 +347,7 @@ Always consult qualified healthcare professionals for real medical advice.
 - Expanded API/UI inputs for BRFSS-style health indicators
 - Added production training script with model comparison and metrics output
 - Added AWS App Runner Terraform deployment stack
+- Added production Next.js risk console with secure API proxy route
 
 ## Security Notes
 

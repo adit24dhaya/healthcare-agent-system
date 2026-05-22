@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #080a0d;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 260px),
+    #080a0d;
+  color: #f4f6f8;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+input[type="range"] {
+  accent-color: #5aa3d9;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .console-panel {
+    @apply border border-borderSoft bg-panel shadow-console;
+  }
+
+  .field-label {
+    @apply text-xs font-semibold uppercase tracking-[0.08em] text-muted;
+  }
+
+  .field-input {
+    @apply h-10 w-full rounded-md border border-borderSoft bg-canvas px-3 text-sm text-ink outline-none transition focus:border-info;
+  }
+
+  .toggle-row {
+    @apply flex items-center gap-3 rounded-md border border-borderSoft bg-canvas/50 px-3 py-2 text-sm text-ink;
+  }
+}

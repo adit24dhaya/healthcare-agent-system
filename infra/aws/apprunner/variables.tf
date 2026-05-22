@@ -16,8 +16,20 @@ variable "ecr_repository_name" {
   default     = "healthcare-ai-risk-api"
 }
 
-variable "image_identifier" {
+variable "web_ecr_repository_name" {
+  description = "ECR repository name for the Next.js web image."
+  type        = string
+  default     = "healthcare-ai-risk-web"
+}
+
+variable "api_image_identifier" {
   description = "Full ECR image URI with tag. Defaults to this stack's ECR repo latest tag."
+  type        = string
+  default     = ""
+}
+
+variable "web_image_identifier" {
+  description = "Full ECR web image URI with tag. Defaults to this stack's web ECR repo latest tag."
   type        = string
   default     = ""
 }

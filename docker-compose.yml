@@ -10,9 +10,11 @@ services:
       API_TOKEN: ${API_TOKEN:-dev-token}
       REQUIRE_API_TOKEN: ${REQUIRE_API_TOKEN:-false}
       LOG_DIR: /app/logs
+      MODEL_ARTIFACT_PATH: /app/artifacts/risk_model.joblib
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - ./artifacts:/app/artifacts
 
   ui:
     build: .
@@ -24,5 +26,16 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      API_BASE_URL: http://api:8000
+      API_TOKEN: ${API_TOKEN:-dev-token}
     depends_on:
       - api

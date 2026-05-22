@@ -1,17 +1,21 @@
 # AWS Deployment
 
-The deployment target is AWS App Runner running the Dockerized FastAPI service. This
-keeps the production path small enough to maintain while still showing a real cloud
+The deployment target is AWS App Runner running two Dockerized services:
+
+- FastAPI inference API
+- Next.js healthcare risk console
+
+This keeps the production path small enough to maintain while still showing a real cloud
 stack: Docker, ECR, managed HTTPS, health checks, Terraform, and token-protected APIs.
 
 ## Deployment Flow
 
 1. Train the model on Kaggle.
 2. Download `risk_model.joblib` into `artifacts/`.
-3. Build the API Docker image.
-4. Create the ECR repository with Terraform.
-5. Push the image to ECR.
-6. Deploy App Runner with Terraform from `infra/aws/apprunner`.
+3. Create the ECR repositories with Terraform.
+4. Build the API and web Docker images.
+5. Push both images to ECR.
+6. Deploy both App Runner services with Terraform from `infra/aws/apprunner`.
 
 ## Runtime Contract
 
@@ -21,6 +25,11 @@ The container expects:
 - `REQUIRE_API_TOKEN=true`
 - `API_TOKEN=<strong-token>`
 - `OPENAI_API_KEY=<optional-key>`
+
+The Next.js container expects:
+
+- `API_BASE_URL=https://<api-service-url>`
+- `API_TOKEN=<same-token-used-by-api>`
 
 If the model artifact is not present, the service starts with the local demo CSV model.
 For the portfolio deployment, include the Kaggle artifact in the image before pushing
@@ -36,11 +45,18 @@ curl -s https://<service-url>/v1/predict/summary \
   -d '{"age":52,"height_cm":170,"weight_kg":88,"bp":142,"glucose":160}'
 ```
 
+## Web Check
+
+Open the App Runner web service URL and run a patient assessment from the browser.
+The browser calls the Next.js `/api/predict` route, and that server-side route forwards
+to the protected FastAPI `/v1/predict` endpoint.
+
 ## Portfolio Talking Points
 
 - reproducible Kaggle training
 - persisted model artifact with metrics and model card
 - FastAPI inference service
-- Streamlit decision dashboard
+- Next.js production risk console
+- Streamlit decision dashboard as a local fallback
 - retrieval, memory, safety checks, and explainability
 - Dockerized deployment to AWS App Runner with Terraform
