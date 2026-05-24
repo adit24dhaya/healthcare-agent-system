@@ -9,3 +9,18 @@ artifacts/*.joblib
 artifacts/*.log
 web/.next/
 web/node_modules/
+web/tsconfig.tsbuildinfo
+graphify-out/cache/
+
+# Local AI agent / MCP tooling
+AGENTS.md
+.cursor/mcp.json
+.cursor/rules/agent-context.mdc
+.cursor/rules/graphify.mdc
+.cursorignore
+.cursorindexingignore
+.serena/
+.graphifyignore
+.repomixignore
+repomix.config.json
+graphify-out/

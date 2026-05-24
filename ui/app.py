@@ -289,7 +289,7 @@ for disclaimer in safety.get("disclaimers", []):
 assessment_tab, evidence_tab, history_tab = st.tabs(["Assessment", "Evidence", "History"])
 
 with assessment_tab:
-    left, right = st.columns([1.1, 1])
+    left, right = st.columns([1, 1])
 
     with left:
         st.subheader("Explanation")
@@ -334,6 +334,16 @@ with assessment_tab:
                     ],
                 )
                 .properties(height=320)
+                .configure(background="transparent")
+                .configure_axis(
+                    labelColor="#9aa4b2",
+                    titleColor="#9aa4b2",
+                    gridColor="rgba(255,255,255,0.08)",
+                    domainColor="rgba(255,255,255,0.18)",
+                    tickColor="rgba(255,255,255,0.18)",
+                )
+                .configure_legend(labelColor="#9aa4b2", titleColor="#9aa4b2")
+                .configure_view(strokeOpacity=0)
             )
             st.altair_chart(bar, use_container_width=True)
 

@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   BarChart3,
   Brain,
+  ChevronDown,
   CheckCircle2,
   ClipboardList,
   Database,
@@ -23,6 +24,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -89,6 +91,7 @@ function RiskConsoleInner() {
     onSuccess: (result) => {
       setLastResult(result);
       setActiveTab("assessment");
+      void queryClient.invalidateQueries({ queryKey: ["history"] });
     },
   });
 
@@ -168,19 +171,15 @@ function RiskConsoleInner() {
                 value={form.bp}
                 onChange={(value) => updateField("bp", value)}
               />
-              <NumberField
-                label="Glucose"
-                suffix="mg/dL"
-                min={0}
-                max={500}
-                value={form.glucose ?? 0}
+              <GlucoseField
+                value={form.glucose}
                 onChange={(value) => updateField("glucose", value)}
               />
             </div>
             <MiniStat label="Calculated BMI" value={calculatedBmi.toFixed(1)} />
           </InputSection>
 
-          <InputSection title="Health Profile" icon={<ClipboardList className="h-4 w-4" />}>
+          <InputSection title="Health Profile" icon={<ClipboardList className="h-4 w-4" />} defaultOpen={false}>
             <ToggleGrid>
               <Toggle
                 label="High cholesterol"
@@ -236,7 +235,7 @@ function RiskConsoleInner() {
             />
           </InputSection>
 
-          <InputSection title="Lifestyle and Access" icon={<Activity className="h-4 w-4" />}>
+          <InputSection title="Lifestyle and Access" icon={<Activity className="h-4 w-4" />} defaultOpen={false}>
             <ToggleGrid>
               <Toggle
                 label="Physical activity"
@@ -340,46 +339,45 @@ function Hero({ result }: { result: PredictionResult | null | undefined }) {
       : confidenceLabel;
   const escalation = result?.safety?.escalation ?? "routine_followup";
   const escalationLabel = ESCALATION_LABELS[escalation] ?? escalation;
+  const probability = result ? result.probability * 100 : 0;
 
   return (
-    <header className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+    <header className="grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
       <div>
         <div className="flex items-center gap-2 text-sm font-semibold text-info">
           <Brain className="h-4 w-4" />
           AI/ML Decision Support
         </div>
-        <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">
-          Healthcare AI Risk Console
-        </h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-          Educational prototype only; not medical advice. Clinical decisions require qualified
-          clinician review and measured labs/vitals.
+          Trained Kaggle risk model with explainability, retrieved clinical context, memory, and
+          deployment-ready API/UI separation. Educational prototype only; not medical advice.
         </p>
       </div>
 
-      <div className="console-panel grid gap-3 rounded-lg p-4 sm:grid-cols-2">
-        <MetricTile
-          label="Risk"
-          value={result ? result.risk : "Not run"}
-          icon={<Gauge className="h-4 w-4" />}
-          accent={riskColor}
-        />
-        <MetricTile
-          label="Probability"
-          value={result ? `${(result.probability * 100).toFixed(1)}%` : "—"}
-          icon={<BarChart3 className="h-4 w-4" />}
-        />
-        <MetricTile label="BMI" value={result ? result.patient.bmi.toFixed(1) : "—"} />
-        <MetricTile label="Confidence" value={confidence} icon={<ShieldCheck className="h-4 w-4" />} />
-        <div className="sm:col-span-2">
+      <div className="console-panel rounded-lg p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <RiskBadge risk={result ? result.risk : "Low"} muted={!result} />
+            <div>
+              <div className="field-label">Predicted Risk</div>
+              <div className="mt-1 text-sm text-muted">
+                {result ? `${probability.toFixed(1)}% probability` : "Awaiting assessment"}
+              </div>
+            </div>
+          </div>
+          <Gauge className="h-5 w-5" style={{ color: result ? riskColor : "#9aa4b2" }} />
+        </div>
+
+        <ProbabilityGauge value={probability} color={result ? riskColor : "#5aa3d9"} muted={!result} />
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <MetricTile label="BMI" value={result ? result.patient.bmi.toFixed(1) : "—"} />
+          <MetricTile label="Confidence" value={confidence} icon={<ShieldCheck className="h-4 w-4" />} />
           <div className="rounded-md border border-borderSoft bg-canvas/50 p-3">
             <div className="field-label">Escalation</div>
-            <div className="mt-2 flex items-center gap-2">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: ESCALATION_COLORS[escalation] }}
-              />
-              <span className="text-sm font-semibold text-ink">{escalationLabel}</span>
+            <div className="mt-2 flex min-h-7 items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: ESCALATION_COLORS[escalation] }} />
+              <span className="text-sm font-semibold text-ink">{result ? escalationLabel : "Not assigned"}</span>
             </div>
           </div>
         </div>
@@ -396,8 +394,14 @@ function ModelStrip({ result }: { result: PredictionResult }) {
   return (
     <section className="console-panel grid gap-3 rounded-lg p-4 md:grid-cols-5">
       <ModelItem label="Model" value={formatModelName(selectedModel)} />
-      <ModelItem label="Rows" value={model?.rows_total ? model.rows_total.toLocaleString() : "—"} />
-      <ModelItem label="ROC AUC" value={metrics?.roc_auc ? metrics.roc_auc.toFixed(3) : "—"} />
+      <ModelItem
+        label="Rows"
+        value={typeof model?.rows_total === "number" ? model.rows_total.toLocaleString() : "—"}
+      />
+      <ModelItem
+        label="ROC AUC"
+        value={typeof metrics?.roc_auc === "number" ? metrics.roc_auc.toFixed(3) : "—"}
+      />
       <ModelItem label="Calibration" value={model?.calibration ?? "—"} />
       <ModelItem label="Source" value={model?.dataset_slug ?? "Kaggle artifact"} />
     </section>
@@ -507,21 +511,29 @@ function History({
   }>;
   isLoading: boolean;
 }) {
-  const fallbackRows = result.similar_cases.map((item, index) => ({
-    id: index + 1,
-    risk: item.metadata.risk ?? "Unknown",
-    probability: item.metadata.probability ?? 0,
-    timestamp: item.metadata.timestamp ?? "Stored memory",
-  }));
-  const rows =
-    records.length > 0
-      ? records.map((item, index) => ({
-          id: index + 1,
-          risk: item.metadata.risk ?? "Unknown",
-          probability: item.metadata.probability ?? 0,
-          timestamp: item.metadata.timestamp ?? item.summary,
-        }))
-      : fallbackRows;
+  const fallbackRows = useMemo(
+    () =>
+      result.similar_cases.map((item, index) => ({
+        id: index + 1,
+        risk: item.metadata.risk ?? "Unknown",
+        probability: item.metadata.probability ?? 0,
+        timestamp: formatMemoryTimestamp(item.metadata.timestamp, "Stored memory"),
+      })),
+    [result.similar_cases],
+  );
+  const rows = useMemo(
+    () =>
+      records.length > 0
+        ? records.map((item, index) => ({
+            id: index + 1,
+            risk: item.metadata.risk ?? "Unknown",
+            probability: item.metadata.probability ?? 0,
+            timestamp: formatMemoryTimestamp(item.metadata.timestamp, item.summary),
+          }))
+        : fallbackRows,
+    [fallbackRows, records],
+  );
+  const distribution = useMemo(() => riskDistribution(rows), [rows]);
 
   return (
     <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
@@ -529,7 +541,7 @@ function History({
         <PanelHeading icon={<BarChart3 className="h-4 w-4" />} title="Risk Distribution" />
         <div className="mt-4 h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={riskDistribution(rows)} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
+            <BarChart data={distribution} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
               <XAxis dataKey="risk" stroke="#9aa4b2" tickLine={false} axisLine={false} />
               <YAxis stroke="#9aa4b2" tickLine={false} axisLine={false} />
@@ -542,7 +554,7 @@ function History({
                 }}
               />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {riskDistribution(rows).map((entry) => (
+                {distribution.map((entry) => (
                   <Cell key={entry.risk} fill={RISK_COLORS[entry.risk] ?? "#5aa3d9"} />
                 ))}
               </Bar>
@@ -593,13 +605,13 @@ function FeatureImpactPanel({ features, method }: { features: ChartFeature[]; me
             <Tooltip
               cursor={{ fill: "rgba(255,255,255,0.04)" }}
               formatter={(value) => [Number(value).toFixed(4), "Impact"]}
-              labelFormatter={(label) => label}
               contentStyle={{
                 background: "#101318",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: 8,
               }}
             />
+            <ReferenceLine x={0} stroke="rgba(244,246,248,0.45)" strokeDasharray="3 3" />
             <Bar dataKey="impact" radius={[0, 4, 4, 0]}>
               {features.map((feature) => (
                 <Cell key={feature.feature} fill={feature.impact >= 0 ? "#d05245" : "#2f9b6a"} />
@@ -676,19 +688,24 @@ function InputSection({
   title,
   icon,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   icon: ReactNode;
   children: ReactNode;
+  defaultOpen?: boolean;
 }) {
   return (
-    <section className="mb-4 rounded-lg border border-borderSoft bg-panel p-4">
-      <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-ink">
-        <span className="text-info">{icon}</span>
-        {title}
-      </div>
-      <div className="space-y-3">{children}</div>
-    </section>
+    <details open={defaultOpen} className="group mb-4 rounded-lg border border-borderSoft bg-panel p-4">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+        <span className="flex items-center gap-2">
+          <span className="text-info">{icon}</span>
+          {title}
+        </span>
+        <ChevronDown className="h-4 w-4 text-muted transition group-open:rotate-180" />
+      </summary>
+      <div className="mt-4 space-y-3">{children}</div>
+    </details>
   );
 }
 
@@ -725,6 +742,46 @@ function NumberField({
         onChange={(event) => onChange(Number(event.target.value))}
       />
     </label>
+  );
+}
+
+function GlucoseField({
+  value,
+  onChange,
+}: {
+  value: number | null;
+  onChange: (value: number | null) => void;
+}) {
+  const hasGlucose = value !== null;
+
+  return (
+    <div className="rounded-md border border-borderSoft bg-canvas/50 p-3">
+      <label className="flex items-center justify-between gap-3 text-sm text-ink">
+        <span className="font-semibold">Glucose available</span>
+        <input
+          type="checkbox"
+          checked={hasGlucose}
+          onChange={(event) => onChange(event.target.checked ? 110 : null)}
+          className="h-4 w-4 accent-info"
+        />
+      </label>
+      <label className="mt-3 block">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <span className="field-label">Glucose</span>
+          <span className="text-xs text-muted">mg/dL</span>
+        </div>
+        <input
+          className="field-input disabled:cursor-not-allowed disabled:opacity-50"
+          type="number"
+          min={0}
+          max={500}
+          value={value ?? ""}
+          placeholder="Use model median"
+          disabled={!hasGlucose}
+          onChange={(event) => onChange(event.target.value === "" ? null : Number(event.target.value))}
+        />
+      </label>
+    </div>
   );
 }
 
@@ -766,6 +823,8 @@ function SliderField({
   min: number;
   max: number;
 }) {
+  const fillPercent = max > min ? ((value - min) / (max - min)) * 100 : 0;
+
   return (
     <label className="block rounded-md border border-borderSoft bg-canvas/50 p-3">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -773,11 +832,14 @@ function SliderField({
         <span className="text-sm font-semibold text-info">{value}</span>
       </div>
       <input
-        className="w-full"
+        className="range-input w-full"
         type="range"
         min={min}
         max={max}
         value={value}
+        style={{
+          background: `linear-gradient(to right, #5aa3d9 0%, #5aa3d9 ${fillPercent}%, rgba(255,255,255,0.14) ${fillPercent}%, rgba(255,255,255,0.14) 100%)`,
+        }}
         onChange={(event) => onChange(Number(event.target.value))}
       />
       <div className="mt-1 flex justify-between text-[11px] text-muted">
@@ -832,6 +894,47 @@ function MetricTile({
         <span style={{ color: accent }}>{icon}</span>
       </div>
       <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
+    </div>
+  );
+}
+
+function RiskBadge({ risk, muted = false }: { risk: RiskLevel; muted?: boolean }) {
+  const color = muted ? "#9aa4b2" : RISK_COLORS[risk];
+
+  return (
+    <span
+      className="rounded-full border px-3 py-1.5 text-xs font-bold uppercase"
+      style={{
+        borderColor: `${color}66`,
+        backgroundColor: `${color}1f`,
+        color,
+      }}
+    >
+      {muted ? "Not run" : risk}
+    </span>
+  );
+}
+
+function ProbabilityGauge({ value, color, muted = false }: { value: number; color: string; muted?: boolean }) {
+  const safeValue = Math.max(0, Math.min(100, value));
+
+  return (
+    <div className="mt-4">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="field-label">Risk Probability</span>
+        <span className="text-sm font-semibold text-ink">{muted ? "—" : `${safeValue.toFixed(1)}%`}</span>
+      </div>
+      <div className="h-3 overflow-hidden rounded-full border border-borderSoft bg-canvas">
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${muted ? 0 : safeValue}%`, backgroundColor: color }}
+        />
+      </div>
+      <div className="mt-2 flex justify-between text-[11px] text-muted">
+        <span>0%</span>
+        <span>50%</span>
+        <span>100%</span>
+      </div>
     </div>
   );
 }
@@ -942,6 +1045,21 @@ function calculateBmi(heightCm: number, weightKg: number) {
   const heightM = heightCm / 100;
   if (heightM <= 0) return 0;
   return weightKg / (heightM * heightM);
+}
+
+function formatMemoryTimestamp(value: string | undefined, fallback: string) {
+  if (!value) return fallback;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return fallback;
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function riskDistribution(rows: Array<{ risk: string }>) {
