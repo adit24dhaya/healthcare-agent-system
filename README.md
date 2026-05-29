@@ -28,6 +28,12 @@ Portfolio screenshots and short browser recordings are saved in [`docs/media`](d
 |---------|-----------------------------|
 | ![History tab with risk distribution and memory records](docs/media/screenshots/history.png) | ![Missing glucose state with reduced confidence warning](docs/media/screenshots/missing-glucose.png) |
 
+Scenario screenshots with varied patient values, health profile inputs, and lifestyle/access inputs:
+
+| Preventive profile | Cardiometabolic profile | Access/lab uncertainty profile |
+|--------------------|-------------------------|--------------------------------|
+| ![Preventive profile with expanded health and lifestyle sections](docs/media/screenshots/scenario-preventive-profile.png) | ![Cardiometabolic risk profile with expanded health and lifestyle sections](docs/media/screenshots/scenario-cardiometabolic-profile.png) | ![Access barrier and missing glucose profile with expanded health and lifestyle sections](docs/media/screenshots/scenario-access-lifestyle-profile.png) |
+
 Short clips:
 
 - [Patient assessment flow](docs/media/videos/01-assessment-flow.webm)
