@@ -1,0 +1,27 @@
+import type { PatientInput } from "@/types/healthcare";
+
+export const DEFAULT_INPUT: PatientInput = {
+  age: 45,
+  height_cm: 170,
+  weight_kg: 82.4,
+  bp: 130,
+  glucose: 180,
+  high_chol: false,
+  chol_check: true,
+  smoker: false,
+  stroke: false,
+  heart_disease_or_attack: false,
+  phys_activity: true,
+  fruits: true,
+  veggies: true,
+  heavy_alcohol_consump: false,
+  any_healthcare: true,
+  no_doc_bc_cost: false,
+  general_health: 3,
+  mental_health_days: 2,
+  physical_health_days: 2,
+  diff_walk: false,
+  sex: "female",
+  education: 5,
+  income: 5,
+};
