@@ -16,6 +16,25 @@ End-to-end healthcare AI prototype: **Kaggle-trained ML**, **multi-agent orchest
 | **UI** | Next.js clinical risk console (portfolio UI) + Streamlit for rapid iteration |
 | **Cloud** | Docker, ECR, Terraform (API + web on AWS App Runner) |
 
+## Product demo
+
+Portfolio screenshots and short browser recordings are saved in [`docs/media`](docs/media/).
+
+| Assessment | Evidence |
+|------------|----------|
+| ![Assessment dashboard with risk gauge and feature impact chart](docs/media/screenshots/assessment.png) | ![Evidence tab with retrieved clinical context and similar cases](docs/media/screenshots/evidence.png) |
+
+| History | Missing glucose safety flow |
+|---------|-----------------------------|
+| ![History tab with risk distribution and memory records](docs/media/screenshots/history.png) | ![Missing glucose state with reduced confidence warning](docs/media/screenshots/missing-glucose.png) |
+
+Short clips:
+
+- [Patient assessment flow](docs/media/videos/01-assessment-flow.webm)
+- [Retrieved evidence and similar cases](docs/media/videos/02-evidence-flow.webm)
+- [Risk history and memory records](docs/media/videos/03-history-flow.webm)
+- [Missing glucose safety behavior](docs/media/videos/04-missing-glucose-flow.webm)
+
 ## Model performance (v5, holdout test)
 
 Trained on Kaggle: [healthcare-ai-diabetes-risk-training](https://www.kaggle.com/code/aditya2402/healthcare-ai-diabetes-risk-training)
