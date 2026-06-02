@@ -1,0 +1,13 @@
+web/
+ui/
+graphify-out/
+.venv/
+kaggle/
+infra/
+scripts/
+tests/
+.cursor/
+.pytest_cache/
+.ruff_cache/
+docs/
+README.md
