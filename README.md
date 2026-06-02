@@ -1,10 +1,22 @@
 # Healthcare AI Risk Console
 
-End-to-end healthcare AI prototype: **Kaggle-trained ML**, **multi-agent orchestration**, **FastAPI inference**, and a **production Next.js dashboard** — deployable to AWS App Runner.
+End-to-end healthcare AI prototype: **Kaggle-trained ML**, **multi-agent orchestration**, **FastAPI inference**, and a **production Next.js dashboard**.
 
 > **Educational prototype only — not medical advice.** Not a medical device. Not clinically validated.
 
 **Repository:** [github.com/adit24dhaya/healthcare-agent-system](https://github.com/adit24dhaya/healthcare-agent-system)
+
+## Live demo
+
+| | URL |
+|---|-----|
+| **Web app (Next.js)** | [healthcare-agent-system-teal.vercel.app](https://healthcare-agent-system-teal.vercel.app) |
+| **API (FastAPI)** | [healthcare-achv-api-adit24-cbf3793610ff.herokuapp.com/docs](https://healthcare-achv-api-adit24-cbf3793610ff.herokuapp.com/docs) |
+| **API health** | […/health](https://healthcare-achv-api-adit24-cbf3793610ff.herokuapp.com/health) |
+
+The Heroku root URL returns `{"detail":"Not Found"}` — that is expected; use `/docs` or the Vercel app.
+
+Deploy notes: [`docs/deployment.md`](docs/deployment.md). Optional AWS path: [`docs/aws_deployment.md`](docs/aws_deployment.md).
 
 ## What this demonstrates
 
@@ -14,7 +26,7 @@ End-to-end healthcare AI prototype: **Kaggle-trained ML**, **multi-agent orchest
 | **Inference** | FastAPI service with persisted `joblib` artifact and BRFSS feature mapping |
 | **AI agents** | Risk scoring, explainability, RAG retrieval, memory, LLM explanation & recommendations |
 | **UI** | Next.js clinical risk console (portfolio UI) + Streamlit for rapid iteration |
-| **Cloud** | Docker, ECR, Terraform (API + web on AWS App Runner) |
+| **Cloud** | Vercel (web) + Heroku (API); optional AWS App Runner via Terraform |
 
 ## Product demo
 
@@ -84,7 +96,7 @@ Details: [`docs/architecture.md`](docs/architecture.md)
 - **Agents:** OpenAI API, ChromaDB, local medical knowledge base
 - **Backend:** FastAPI, Uvicorn, Docker
 - **Frontend:** Next.js 15, TypeScript, Tailwind, TanStack Query, Recharts; Streamlit
-- **Deploy:** AWS App Runner, ECR, Terraform, GitHub Actions CI
+- **Deploy:** Vercel, Heroku, Docker; optional AWS App Runner + Terraform
 
 ## Quick start (recommended)
 
@@ -171,19 +183,11 @@ curl -s http://127.0.0.1:8000/health
 
 Optional auth: `REQUIRE_API_TOKEN=true` and `Authorization: Bearer <API_TOKEN>`.
 
-## Deploy to AWS
+## Deploy (production)
 
-API and Next.js deploy as separate App Runner services (ECR + Terraform).
+**Current stack:** Next.js on **Vercel** (`web/`) + FastAPI on **Heroku** (Python buildpack). See [`docs/deployment.md`](docs/deployment.md).
 
-```bash
-cd infra/aws/apprunner
-terraform init
-terraform apply -target=aws_ecr_repository.api -target=aws_ecr_repository.web
-# Build/push Docker images, then full apply
-terraform apply -var "api_token=replace-with-a-strong-token"
-```
-
-See [`docs/aws_deployment.md`](docs/aws_deployment.md) and [`infra/aws/apprunner/README.md`](infra/aws/apprunner/README.md).
+**Optional AWS:** App Runner + ECR + Terraform — [`docs/aws_deployment.md`](docs/aws_deployment.md).
 
 ## Project structure
 
