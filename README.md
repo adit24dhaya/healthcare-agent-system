@@ -24,7 +24,7 @@ Deploy notes: [`docs/deployment.md`](docs/deployment.md). Optional AWS path: [`d
 |-------|----------------|
 | **Data & ML** | CDC BRFSS diabetes dataset (253k rows), Kaggle training, CV + tuning + calibration |
 | **Inference** | FastAPI service with persisted `joblib` artifact and BRFSS feature mapping |
-| **AI agents** | Risk scoring, explainability, RAG retrieval, memory, LLM explanation & recommendations |
+| **AI agents** | Risk scoring, SHAP/sensitivity explainability, RAG retrieval, memory, safety guardrails; optional LLM text |
 | **UI** | Next.js clinical risk console (portfolio UI) + Streamlit for rapid iteration |
 | **Cloud** | Vercel (web) + Heroku (API); optional AWS App Runner via Terraform |
 
@@ -81,19 +81,21 @@ Orchestrator
    ├── Safety guardrails + escalation
    ├── RAG medical context retrieval
    ├── ChromaDB memory (similar cases)
-   ├── LLM explanation
-   └── LLM recommendation
+   ├── Explanation (OpenAI optional → rule-based fallback)
+   └── Recommendation (OpenAI optional → rule-based fallback)
         │
         ▼
 Structured response → UI tabs (Assessment / Evidence / History)
 ```
+
+The **live demo runs without any paid API keys**. Risk scoring, feature drivers, RAG, memory, and safety layers work out of the box; explanation and recommendation use built-in fallbacks when `OPENAI_API_KEY` is unset.
 
 Details: [`docs/architecture.md`](docs/architecture.md)
 
 ## Tech stack
 
 - **ML:** scikit-learn, LightGBM, pandas, joblib — training on Kaggle
-- **Agents:** OpenAI API, ChromaDB, local medical knowledge base
+- **Agents:** ChromaDB, local medical knowledge base; optional OpenAI for richer text (not required)
 - **Backend:** FastAPI, Uvicorn, Docker
 - **Frontend:** Next.js 15, TypeScript, Tailwind, TanStack Query, Recharts; Streamlit
 - **Deploy:** Vercel, Heroku, Docker; optional AWS App Runner + Terraform
@@ -123,7 +125,7 @@ Or copy an existing `artifacts/risk_model.joblib` into `artifacts/`.
 
 ```bash
 cp .env.example .env
-# Edit .env — set OPENAI_API_KEY for LLM agents (optional for risk score only)
+# OPENAI_API_KEY is optional — omit it to use rule-based explanation/recommendation
 export MODEL_ARTIFACT_PATH=./artifacts/risk_model.joblib
 ```
 
@@ -185,9 +187,14 @@ Optional auth: `REQUIRE_API_TOKEN=true` and `Authorization: Bearer <API_TOKEN>`.
 
 ## Deploy (production)
 
-**Current stack:** Next.js on **Vercel** (`web/`) + FastAPI on **Heroku** (Python buildpack). See [`docs/deployment.md`](docs/deployment.md).
+**Current stack:** Next.js on **Vercel** (`web/`) + FastAPI on **Heroku** (Python buildpack). No OpenAI or Hugging Face keys are required for the hosted demo.
 
-**Optional AWS:** App Runner + ECR + Terraform — [`docs/aws_deployment.md`](docs/aws_deployment.md).
+| Platform | Role | Env vars |
+|----------|------|----------|
+| **Vercel** | Next.js UI (`web/`) | `API_BASE_URL`, `API_TOKEN` |
+| **Heroku** | FastAPI + model | `API_TOKEN`, `REQUIRE_API_TOKEN=true`, `MODEL_ARTIFACT_PATH`, `LOG_DIR` |
+
+See [`docs/deployment.md`](docs/deployment.md). Optional AWS path: [`docs/aws_deployment.md`](docs/aws_deployment.md).
 
 ## Project structure
 

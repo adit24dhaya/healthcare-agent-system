@@ -35,7 +35,7 @@ Browser → Vercel (Next.js, web/) → server routes proxy → Heroku (FastAPI +
 - App: `healthcare-achv-api-adit24`
 - Stack: `heroku/python` (see repo `Procfile`, `runtime.txt`)
 - Config: `REQUIRE_API_TOKEN=true`, `API_TOKEN`, `MODEL_ARTIFACT_PATH=artifacts/risk_model.joblib`, `LOG_DIR=logs`
-- Optional: `OPENAI_API_KEY` for LLM explanation and chat agents
+- **Not required:** `OPENAI_API_KEY` — production uses rule-based explanation and recommendation when unset
 
 The production model artifact is bundled in the Heroku slug (not in GitHub). To redeploy API changes with the model:
 
